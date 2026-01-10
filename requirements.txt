@@ -1,0 +1,2 @@
+# GitFlow - Smart Git Workflow Assistant
+# No external dependencies! Uses native git CLI.
