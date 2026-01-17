@@ -1,3 +1,5 @@
+<img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/bdc93d79-702b-4615-a3ba-d4a7090d8c1a" />
+
 # 🌊 GitFlow - Smart Git Workflow Assistant
 
 **Simple. Powerful. For Developers.**
@@ -338,6 +340,9 @@ $ python gitflow.py stats
 MIT License - Free to use, modify, and distribute.
 
 ---
+
+<img width="1024" height="1024" alt="image" src="https://github.com/user-attachments/assets/46c8bd70-186e-4c0b-8ccf-f43c1125ea52" />
+
 
 ## 🤝 Contributing
 
