@@ -372,4 +372,12 @@ gitflow init
 
 ---
 
+## 🙏 Credits
+
+Created by **Randell Logan Smith and Team Brain** at [Metaphy LLC](https://metaphysicsandcomputing.com)
+
+Part of the HMSS (Heavenly Morning Star System) ecosystem.
+
+---
+
 **🌊 Make your git workflow flow!**
