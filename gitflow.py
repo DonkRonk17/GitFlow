@@ -20,16 +20,16 @@ if sys.stdout.encoding != 'utf-8':
 
 # --- Config ---
 COMMIT_TYPES = {
-    "feat": "✨ New feature",
-    "fix": "🐛 Bug fix",
-    "docs": "📝 Documentation",
-    "style": "💎 Code style",
-    "refactor": "♻️  Refactor",
-    "perf": "⚡ Performance",
-    "test": "✅ Tests",
-    "chore": "🔧 Chore",
-    "build": "📦 Build",
-    "ci": "👷 CI/CD"
+    "feat": "[FEAT] New feature",
+    "fix": "[FIX] Bug fix",
+    "docs": "[DOCS] Documentation",
+    "style": "[STYLE] Code style",
+    "refactor": "[REFACTOR] Refactor",
+    "perf": "[PERF] Performance",
+    "test": "[TEST] Tests",
+    "chore": "[CHORE] Chore",
+    "build": "[BUILD] Build",
+    "ci": "[CI] CI/CD"
 }
 
 class GitFlow:
@@ -225,14 +225,14 @@ class GitFlow:
 
 def print_repo_stats(stats: Dict):
     """Pretty print repository statistics"""
-    print("\n📊 Repository Statistics\n")
+    print("\n=== Repository Statistics ===\n")
     print(f"Total Commits:     {stats['total_commits']}")
     print(f"Total Files:       {stats['total_files']}")
     print(f"Contributors:      {stats['contributors']}")
     print(f"Recent Activity:   {stats['commits_last_30_days']} commits (last 30 days)")
     
     if stats['top_contributors']:
-        print(f"\n👥 Top Contributors:\n")
+        print(f"\n--- Top Contributors ---\n")
         for name, count in stats['top_contributors']:
             print(f"  {count:>4} commits  {name}")
     
@@ -241,10 +241,10 @@ def print_repo_stats(stats: Dict):
 
 def print_commits(commits: List[Dict]):
     """Pretty print commit log"""
-    print("\n📝 Recent Commits\n")
+    print("\n=== Recent Commits ===\n")
     for commit in commits:
         print(f"{commit['hash']}  {commit['message']}")
-        print(f"         {commit['author']} • {commit['time']}")
+        print(f"         {commit['author']} - {commit['time']}")
         print()
 
 
@@ -311,17 +311,17 @@ Examples:
     
     # Check if git repo (except for init)
     if args.command != 'init' and not gf.is_git_repo():
-        print("❌ Not a git repository")
-        print("💡 Run 'gitflow init' or 'git init' to initialize")
+        print("[X] Not a git repository")
+        print("[INFO] Run 'gitflow init' or 'git init' to initialize")
         return
     
     # Execute command
     if args.command == 'init':
         success, output = gf.run_git(['init'])
         if success:
-            print("✅ Initialized git repository")
+            print("[OK] Initialized git repository")
         else:
-            print(f"❌ Failed: {output}")
+            print(f"[X] Failed: {output}")
     
     elif args.command == 'commit':
         # Build commit message
@@ -329,40 +329,40 @@ Examples:
         message = f"{args.type}{scope_part}: {args.message}"
         
         # Stage all changes
-        print("📦 Staging changes...")
+        print("[...] Staging changes...")
         success, output = gf.run_git(['add', '-A'])
         if not success:
-            print(f"❌ Failed to stage: {output}")
+            print(f"[X] Failed to stage: {output}")
             return
         
         # Commit
-        print(f"💾 Committing: {message}")
+        print(f"[...] Committing: {message}")
         success, output = gf.run_git(['commit', '-m', message])
         if not success:
-            print(f"❌ Failed to commit: {output}")
+            print(f"[X] Failed to commit: {output}")
             return
         
-        print(f"✅ Committed: {COMMIT_TYPES[args.type]}")
+        print(f"[OK] Committed: {COMMIT_TYPES[args.type]}")
         
         # Push (if not disabled)
         if not args.no_push:
-            print("📤 Pushing to remote...")
+            print("[...] Pushing to remote...")
             success, output = gf.run_git(['push'])
             if success:
-                print("✅ Pushed to remote")
+                print("[OK] Pushed to remote")
             else:
-                print(f"⚠️  Push failed: {output}")
-                print("💡 Run 'git push' manually if needed")
+                print(f"[!] Push failed: {output}")
+                print("[INFO] Run 'git push' manually if needed")
     
     elif args.command == 'log':
         commits = gf.get_commit_log(args.count)
         if commits:
             print_commits(commits)
         else:
-            print("📭 No commits found")
+            print("[INFO] No commits found")
     
     elif args.command == 'stats':
-        print("📊 Analyzing repository...")
+        print("[...] Analyzing repository...")
         stats = gf.get_repo_stats()
         print_repo_stats(stats)
     
@@ -371,42 +371,42 @@ Examples:
         branches = gf.get_branches(args.remote)
         
         if not branches:
-            print("📭 No branches found")
+            print("[INFO] No branches found")
             return
         
         title = "Remote Branches" if args.remote else "Local Branches"
-        print(f"\n🌿 {title}\n")
+        print(f"\n=== {title} ===\n")
         
         for branch in branches:
-            marker = "→" if branch == current else " "
+            marker = ">" if branch == current else " "
             print(f"  {marker} {branch}")
         
         print()
     
     elif args.command == 'cleanup':
         if args.dry_run or not args.force:
-            print("🔍 Finding merged branches...\n")
+            print("[...] Finding merged branches...\n")
             branches = gf.cleanup_branches(dry_run=True)
             
             if branches:
-                print("🗑️  These branches can be deleted:\n")
+                print("Branches that can be deleted:\n")
                 for branch in branches:
-                    print(f"  • {branch}")
-                print(f"\n📊 Total: {len(branches)} branch(es)")
+                    print(f"  - {branch}")
+                print(f"\nTotal: {len(branches)} branch(es)")
                 
                 if args.dry_run:
-                    print("\n💡 Run with --force to actually delete")
+                    print("\n[INFO] Run with --force to actually delete")
             else:
-                print("✨ No branches to clean up")
+                print("[OK] No branches to clean up")
         else:
             branches = gf.cleanup_branches(dry_run=False)
             if branches:
-                print(f"✅ Deleted {len(branches)} branch(es)")
+                print(f"[OK] Deleted {len(branches)} branch(es)")
             else:
-                print("✨ No branches to clean up")
+                print("[OK] No branches to clean up")
     
     elif args.command == 'changelog':
-        print("📝 Generating changelog...")
+        print("[...] Generating changelog...")
         
         # Parse since parameter
         since_date = None
@@ -422,39 +422,39 @@ Examples:
         if args.output:
             with open(args.output, 'w', encoding='utf-8') as f:
                 f.write(changelog)
-            print(f"✅ Changelog saved to: {args.output}")
+            print(f"[OK] Changelog saved to: {args.output}")
         else:
             print(changelog)
     
     elif args.command == 'status':
         # Enhanced status
         current_branch = gf.get_current_branch()
-        print(f"\n🌿 On branch: {current_branch}\n")
+        print(f"\n=== On branch: {current_branch} ===\n")
         
         # Run git status
         success, output = gf.run_git(['status', '--short'])
         if success and output:
-            print("📝 Changes:\n")
+            print("Changes:\n")
             for line in output.split('\n'):
                 if line:
                     print(f"  {line}")
             print()
         else:
-            print("✨ Working tree clean\n")
+            print("[OK] Working tree clean\n")
         
         # Show recent commit
         commits = gf.get_commit_log(1)
         if commits:
             commit = commits[0]
-            print(f"📌 Last commit: {commit['hash']} - {commit['message']}")
-            print(f"   {commit['author']} • {commit['time']}\n")
+            print(f"Last commit: {commit['hash']} - {commit['message']}")
+            print(f"   {commit['author']} - {commit['time']}\n")
 
 
 if __name__ == "__main__":
     try:
         main()
     except KeyboardInterrupt:
-        print("\n\n👋 GitFlow interrupted")
+        print("\n\n[INFO] GitFlow interrupted")
     except Exception as e:
-        print(f"\n❌ Error: {e}")
+        print(f"\n[X] Error: {e}")
         sys.exit(1)

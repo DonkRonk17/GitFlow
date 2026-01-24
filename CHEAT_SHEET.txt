@@ -1,0 +1,321 @@
+================================================================================
+                           GITFLOW CHEAT SHEET
+                    Smart Git Workflow Assistant v1.0
+================================================================================
+
+QUICK START
+-----------
+1. Navigate to your git repository: cd my-project
+2. Run any command: python gitflow.py <command> [options]
+3. Get help: python gitflow.py --help
+
+================================================================================
+COMMIT TYPES
+--------------------------------------------------------------------------------
+
+Type      | Description            | Example
+----------|------------------------|----------------------------------------
+feat      | New feature            | gitflow commit feat "Add login page"
+fix       | Bug fix                | gitflow commit fix "Fix null pointer"
+docs      | Documentation          | gitflow commit docs "Update README"
+style     | Code style/formatting  | gitflow commit style "Fix indentation"
+refactor  | Code restructuring     | gitflow commit refactor "Extract method"
+perf      | Performance            | gitflow commit perf "Optimize query"
+test      | Tests                  | gitflow commit test "Add unit tests"
+chore     | Maintenance            | gitflow commit chore "Update deps"
+build     | Build system           | gitflow commit build "Add webpack"
+ci        | CI/CD                  | gitflow commit ci "Add Actions workflow"
+
+================================================================================
+COMMON COMMANDS
+--------------------------------------------------------------------------------
+
+COMMITS
+-------
+# Basic commit (stages all, commits, pushes)
+python gitflow.py commit feat "Add new feature"
+
+# Commit with scope
+python gitflow.py commit fix "Fix bug" --scope auth
+
+# Commit without pushing
+python gitflow.py commit docs "Update docs" --no-push
+
+VIEWING
+-------
+# View recent commits (default 10)
+python gitflow.py log
+
+# View more commits
+python gitflow.py log --count 20
+
+# Repository statistics
+python gitflow.py stats
+
+# Enhanced git status
+python gitflow.py status
+
+BRANCHES
+--------
+# List local branches
+python gitflow.py branches
+
+# List remote branches
+python gitflow.py branches --remote
+
+CLEANUP
+-------
+# Preview branches to delete
+python gitflow.py cleanup --dry-run
+
+# Actually delete merged branches
+python gitflow.py cleanup --force
+
+CHANGELOG
+---------
+# Last 7 days
+python gitflow.py changelog --since 7.days
+
+# From specific date
+python gitflow.py changelog --since 2026-01-01
+
+# Save to file
+python gitflow.py changelog --since 7.days --output CHANGELOG.md
+
+INITIALIZE
+----------
+# Initialize new git repo
+python gitflow.py init
+
+================================================================================
+CLI FLAGS & OPTIONS
+--------------------------------------------------------------------------------
+
+GLOBAL
+------
+--help, -h              Show help message
+--version               Show version
+
+COMMIT OPTIONS
+--------------
+--scope SCOPE           Add scope to commit (e.g., --scope auth)
+--no-push               Don't push after commit
+
+LOG OPTIONS
+-----------
+--count N               Number of commits to show (default: 10)
+
+BRANCHES OPTIONS
+----------------
+--remote                Show remote branches instead of local
+
+CLEANUP OPTIONS
+---------------
+--dry-run               Preview without deleting
+--force                 Actually delete branches
+
+CHANGELOG OPTIONS
+-----------------
+--since SINCE           Start date (7.days or 2026-01-01)
+--output FILE           Save to file instead of stdout
+
+================================================================================
+PYTHON API
+--------------------------------------------------------------------------------
+
+BASIC USAGE
+-----------
+import sys
+sys.path.append('C:/Users/logan/OneDrive/Documents/AutoProjects/GitFlow')
+from gitflow import GitFlow
+
+gf = GitFlow()
+
+COMMON METHODS
+--------------
+# Check if git repo
+is_repo = gf.is_git_repo()
+
+# Get current branch
+branch = gf.get_current_branch()
+
+# Get all branches
+branches = gf.get_branches(remote=False)
+
+# Get commit log
+commits = gf.get_commit_log(count=10)
+
+# Get repository stats
+stats = gf.get_repo_stats()
+
+# Generate changelog
+changelog = gf.generate_changelog(since='7.days')
+
+# Find branches to clean up
+to_delete = gf.cleanup_branches(dry_run=True)
+
+# Run any git command
+success, output = gf.run_git(['status', '--short'])
+
+STATS DICTIONARY
+----------------
+stats = gf.get_repo_stats()
+stats['total_commits']       # Total commit count
+stats['total_files']         # Number of tracked files
+stats['contributors']        # Number of contributors
+stats['commits_last_30_days']# Recent activity count
+stats['top_contributors']    # List of (name, count) tuples
+
+COMMIT DICTIONARY
+-----------------
+commits = gf.get_commit_log(count=1)
+commit = commits[0]
+commit['hash']      # Short hash (7 chars)
+commit['author']    # Author name
+commit['email']     # Author email
+commit['time']      # Relative time (e.g., "2 hours ago")
+commit['message']   # Commit message
+
+================================================================================
+INTEGRATION WITH OTHER TOOLS
+--------------------------------------------------------------------------------
+
+WITH TOKENTRACKER
+-----------------
+from tokentracker import TokenTracker
+from gitflow import GitFlow
+
+tracker = TokenTracker()
+gf = GitFlow()
+
+# Track repository work
+stats = gf.get_repo_stats()
+tracker.log_usage("ATLAS", "gitflow", 0, 0, 
+    f"Analyzed repo: {stats['total_commits']} commits")
+
+WITH SYNAPSELINK
+----------------
+from synapselink import quick_send
+from gitflow import GitFlow
+
+gf = GitFlow()
+stats = gf.get_repo_stats()
+
+quick_send("TEAM", "Repo Stats", 
+    f"Commits: {stats['total_commits']}, Files: {stats['total_files']}")
+
+WITH TASKFLOW
+-------------
+from taskflow import TaskFlow
+from gitflow import GitFlow
+
+tf = TaskFlow()
+gf = GitFlow()
+
+# Create task for git cleanup
+task_id = tf.add_task("Clean up merged branches")
+branches = gf.cleanup_branches(dry_run=False)
+tf.complete_task(task_id, f"Deleted {len(branches)} branches")
+
+================================================================================
+CONFIGURATION
+--------------------------------------------------------------------------------
+
+CONFIG LOCATION
+---------------
+Currently no config file - settings are in code.
+Future: ~/.gitflowrc (JSON format)
+
+PROTECTED BRANCHES
+------------------
+These branches are NEVER deleted by cleanup:
+- main
+- master
+- develop
+
+COMMIT FORMAT
+-------------
+Type: type: message
+With scope: type(scope): message
+
+Examples:
+  feat: Add user authentication
+  fix(auth): Resolve login bug
+  docs: Update API documentation
+
+================================================================================
+TROUBLESHOOTING
+--------------------------------------------------------------------------------
+
+ERROR: "Not a git repository"
+-----------------------------
+Cause: You're not in a git-tracked directory
+Fix: cd to a git repo or run: python gitflow.py init
+
+ERROR: "Git not found"
+----------------------
+Cause: Git is not installed or not in PATH
+Fix: Install git from https://git-scm.com/
+
+ERROR: "Command timed out"
+--------------------------
+Cause: Git operation took too long (>30s)
+Fix: Check network, try again, or run git directly
+
+ERROR: "Failed to commit"
+-------------------------
+Cause: Nothing staged, or pre-commit hook failed
+Fix: Check git status, fix hook issues
+
+ERROR: "Push failed"
+--------------------
+Cause: No remote configured, or auth issue
+Fix: git remote add origin <url> or check credentials
+
+================================================================================
+KEYBOARD SHORTCUTS (CLI)
+--------------------------------------------------------------------------------
+
+Ctrl+C          Cancel current operation
+Tab             Auto-complete (if shell supports)
+Up Arrow        Previous command
+
+================================================================================
+RESOURCES
+--------------------------------------------------------------------------------
+
+Documentation:   AutoProjects/GitFlow/README.md
+Examples:        AutoProjects/GitFlow/EXAMPLES.md
+Integration:     AutoProjects/GitFlow/INTEGRATION_PLAN.md
+Quick Starts:    AutoProjects/GitFlow/QUICK_START_GUIDES.md
+GitHub:          https://github.com/DonkRonk17/GitFlow
+Issues:          https://github.com/DonkRonk17/GitFlow/issues
+
+================================================================================
+QUICK REFERENCE CARD
+--------------------------------------------------------------------------------
+
+# Daily workflow
+gf status                              # Check state
+gf log --count 5                       # Recent commits
+gf commit feat "Description"           # Commit + push
+gf commit fix "Bug fix" --scope area   # Scoped commit
+
+# Weekly tasks
+gf stats                               # Repo health
+gf cleanup --dry-run                   # Preview cleanup
+gf changelog --since 7.days            # Generate changelog
+
+# Commands summary
+status      - Enhanced git status
+log         - View commits  
+stats       - Repository statistics
+branches    - List branches
+cleanup     - Delete merged branches
+changelog   - Generate changelog
+init        - Initialize repo
+commit      - Conventional commit
+
+================================================================================
+Questions? Check EXAMPLES.md or ask in Synapse!
+================================================================================
