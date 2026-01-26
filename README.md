@@ -1,3 +1,5 @@
+<img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/d51a0de9-f15f-42e7-869f-ab57953778c5" />
+
 # GitFlow v1.0
 
 **Smart Git Workflow Assistant - Conventional Commits, Branch Management, and Changelog Generation**
@@ -622,6 +624,9 @@ python -m pytest test_gitflow.py --cov=gitflow --cov-report=html
 **Quality Gate:** 100% test pass rate required before release
 
 ---
+
+<img width="1024" height="1024" alt="image" src="https://github.com/user-attachments/assets/06e7e960-b38a-49b1-9c1c-6f71af1c7e81" />
+
 
 ## Contributing
 
